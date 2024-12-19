@@ -1153,14 +1153,67 @@ Meet customers and exchange information to get product requirements
 
             <textarea name="message" class="form-input" placeholder="Your Message" required data-form-input></textarea>
 
-            <button class="form-btn" type="submit" disabled data-form-btn>
+            <button class="form-btn" type="submit" data-form-btn>
               <ion-icon name="paper-plane"></ion-icon>
               <span>Send Message</span>
             </button>
 
           </form>
 
+          <div id="thankYouPopup" class="popup">
+            <div class="popup-content">
+              <span class="close-btn" onclick="closePopup()">&times;</span>
+              <p>Thank you for your message. We will get back to you soon.</p>
+            </div>
+          </div>
+
+          <div id="errorPopup" class="popup">
+            <div class="popup-content">
+              <span class="close-btn" onclick="closePopup()">&times;</span>
+              <p>Failed to send the message. Please try again later.</p>
+            </div>
+          </div>
+
         </section>
+
+        <style>
+          .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+          }
+
+          .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+          }
+
+          .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+          }
+
+          .close-btn:hover,
+          .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+          }
+        </style>
 
       </article>
 
@@ -1177,6 +1230,38 @@ Meet customers and exchange information to get product requirements
     - custom js link
   -->
   <script src="./assets/js/script.js"></script>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("nL04Ztb-DxGwfCdJ6"); // Replace with your actual public key
+    })();
+
+    function closePopup() {
+      document.getElementById('thankYouPopup').style.display = 'none';
+      document.getElementById('errorPopup').style.display = 'none';
+    }
+
+    document.querySelector('.form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      console.log('Form submitted');
+      emailjs.sendForm('service_93hldom', 'template_fig1n4a', this)  // Ensure 'template_fig1n4a' matches your actual template ID
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          document.getElementById('thankYouPopup').style.display = 'block';
+          
+          // Send thank you email to the sender
+          emailjs.sendForm('service_93hldom', 'template_v5b708a', this)
+            .then(function(response) {
+              console.log('Thank you email sent!', response.status, response.text);
+            }, function(error) {
+              console.log('Failed to send thank you email...', error);
+            });
+        }, function(error) {
+          console.log('FAILED...', error);
+          document.getElementById('errorPopup').style.display = 'block';
+        });
+    });
+  </script>
 
   <!--
     - ionicon link
